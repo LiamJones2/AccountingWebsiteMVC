@@ -1,0 +1,27 @@
+﻿.software-explanation-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to top, gold, #000000);
+}
+
+.software-explanation-div h1 {
+    color: white;
+}
+
+.software-explanation-div button {
+    border-radius: 10px;
+    width: 150px;
+    height: 50px;
+    margin-top: 50px;
+    border: none;
+}
+
+.software-explanation-div button:hover {
+    background-color:black;
+    color:white;
+}
+
+.software-explanation-div img {
+    width: 30%;
+}

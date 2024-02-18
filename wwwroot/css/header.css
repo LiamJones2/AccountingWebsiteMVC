@@ -1,0 +1,14 @@
+﻿body {
+}
+
+header {
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+header h1 {
+    background: linear-gradient(to right, #3498db, #e74c3c);
+    -webkit-background-clip: text;
+    color: transparent;
+}

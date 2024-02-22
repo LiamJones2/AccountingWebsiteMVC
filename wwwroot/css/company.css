@@ -1,0 +1,132 @@
+﻿body {
+    background: linear-gradient(to bottom, #3498db, #e74c3c);
+    
+}
+
+.company-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.company-logo img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 20px;
+}
+
+.company-info {
+    flex: 1;
+}
+
+    .company-info h1 {
+        margin: 0;
+    }
+
+    .company-info p {
+        margin: 5px 0;
+    }
+
+.financial-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.metric-block {
+    flex: 0 0 calc(33.33% - 20px);
+    background-color: #f5f5f5;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    height: 300px;
+}
+
+
+.revenue-quarters {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr); /* Two rows, equal height */
+    gap: 20px; /* Adjust the gap between items */
+}
+
+.revenue-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.graph-label {
+    font-weight: bold;
+}
+
+.revenue-details {
+    flex: 1;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.current-quarter {
+    font-size: 1rem;
+    flex: 1;
+    padding: 10px;
+}
+
+.previous-quarter {
+    font-size: 0.75rem;
+}
+
+.revenue-label {
+    font-weight: bold;
+}
+
+.revenue-value {
+    margin-top: 5px;
+}
+
+    .metric-block:hover {
+        background-color: #e0e0e0; /* Darker background color on hover */
+    }
+
+    /* Add styling for h2 and p tags inside metric-block */
+    .metric-block h2 {
+        color: #333; /* Dark text color */
+        font-size: 1.5em; /* Adjust the font size */
+        margin-bottom: 10px;
+        background-color: darkcyan;
+    }
+
+    .metric-block p {
+        color: #777; /* Lighter text color */
+        font-size: 1.2em; /* Adjust the font size */
+    }
+
+/* Add a subtle border to metric-block */
+.metric-block {
+    border: 1px solid #ccc;
+}
+
+.debt-ratio-container {
+    width: 80%; /* Adjust the width as needed */
+    margin: 0 auto; /* Center the container */
+}
+
+.debt-ratio {
+    width: 100%;
+    height: 50px; /* Set the desired height */
+    background: linear-gradient(to right, green 0%, green 25%, red 25%, red 100%);
+}
+
+
+.colored-square {
+    width: 70%;
+    height: 40%;
+    background: linear-gradient(to right, green 0%, green 25%, red 25%, red 100%);
+}

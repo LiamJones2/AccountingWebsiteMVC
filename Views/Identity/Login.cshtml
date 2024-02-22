@@ -7,8 +7,8 @@
     <div class="login-page">
         <div class="login-container">
             <h2>Login</h2>
-            <form>
-                <label for="username">Username:</label>
+            <form asp-action="Login" asp-controller="Identity" method="post">
+                <label for="username">UserName:</label>
                 <input type="text" id="username" name="username" required>
 
                 <label for="password">Password:</label>

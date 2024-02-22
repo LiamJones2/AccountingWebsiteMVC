@@ -1,6 +1,81 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<h1>Hello to company</h1>
+﻿@model AccountingWebsite.Models.CompanyData
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/company.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>Company Financial Information</title>
+</head>
+<body>
+    <div class="company-header">
+        <div class="company-logo">
+            <img src="/path/to/company-logo.png" alt="Company Logo">
+        </div>
+        <div class="company-info">
+            <h1>@Model.Company.Title</h1>
+            <form asp-action="UpdateQuarter" asp-controller="Company" method="post">
+                <input type="hidden" name="quarter" value="@(Model.quarter.StartDate?.AddMonths(-3))" />
+                <button type="submit">Update Quarter</button>
+            </form>
+            <p>Quarter: Q1 2024</p>
+            <form asp-action="UpdateQuarter" asp-controller="Company" method="post">
+                <input type="hidden" name="quarter" value="@(Model.quarter.StartDate?.AddMonths(3))" />
+                <button type="submit">Update Quarter</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="financial-metrics">
+        <div class="metric-block">
+            <h2>Revenue</h2>
+                <div class="revenue-quarters">
+                    <div class="current-quarter">
+                        <p class="revenue-label">Current Quarter Revenue</p>
+                        <p class="revenue-value">@Model.OverallRevenue</p>
+                    </div>
+                    <div class="previous-quarter">
+                        <p class="revenue-label">Previous Quarter Revenue</p>
+                        <p class="revenue-value">$90,000</p>
+                    </div>
+            </div>
+        </div>
+        <div class="metric-block">
+            <h2>Expenses</h2>
+            <p>@Model.OverallExpenses</p>
+        </div>
+        <div class="metric-block">
+            <h2>Net Profit</h2>
+            <p>@(Model.OverallRevenue - @Model.OverallExpenses)</p>
+        </div>
+        <div class="metric-block">
+            <h2>Debt to Equity Ratio</h2>
+            <div class="debt-ratio-container">
+                <div class="debt-ratio" id="dynamicSquare"></div>
+            </div>
+        </div>
+        <div class="metric-block">
+            <h2>Employee Headcount</h2>
+            <p>10000</p>
+        </div>
+        <div class="metric-block">
+            <h2>Quarterly Customers</h2>
+            <p>10000</p>
+        </div>
+        <div class="metric-block">
+            <h2>Most Active Purchase</h2>
+            <p>10000</p>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var square = document.getElementById('dynamicSquare');
+
+    var percentage = 75;
+
+    square.style.background = `linear-gradient(to right, red 0%, red ${percentage}%, green ${percentage}%, green 100%)`;
+</script>

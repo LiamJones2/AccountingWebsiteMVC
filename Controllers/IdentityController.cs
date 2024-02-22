@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using System.Collections.Specialized;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -29,15 +30,39 @@ namespace AccountingWebsite.Controllers
 
         public IActionResult Signup()
         {
-            System.Diagnostics.Debug.WriteLine("Test");
             return View();
+        }
+ 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Company");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                return View(model);
+            }
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostCompanyAndUser(Company companyModel, ApplicationUser userModel, string userPassword)
         {
-            System.Diagnostics.Debug.WriteLine("Here");
             ModelState["userModel.Company"].ValidationState = ModelValidationState.Valid;
             if (await PostCompany(companyModel))
             {
@@ -84,7 +109,7 @@ namespace AccountingWebsite.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, CompanyId = model.CompanyId };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, CompanyId = model.CompanyId, LockoutEnabled = false, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user, userPassword);
 
                 if (result.Succeeded)

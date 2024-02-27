@@ -5,26 +5,30 @@
 
 .company-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     background-color: #f0f0f0;
 }
 
 .company-logo img {
-    max-width: 100px;
-    max-height: 100px;
-    margin-right: 20px;
+    max-width: 100px; /* Adjust as needed */
 }
 
-.company-info {
-    flex: 1;
+.company-info h1 {
+    font-size: 5rem;
+    margin: 0;
 }
 
-    .company-info h1 {
-        margin: 0;
+.company-quarter {
+    text-align: right;
+}
+
+    .company-quarter form {
+        display: inline-block; /* Keeps the buttons on the same line */
     }
 
-    .company-info p {
+    .company-quarter p {
         margin: 5px 0;
     }
 
@@ -51,7 +55,6 @@
 .revenue-quarters {
     display: grid;
     grid-template-rows: repeat(2, 1fr); /* Two rows, equal height */
-    gap: 20px; /* Adjust the gap between items */
 }
 
 .revenue-container {
@@ -66,7 +69,6 @@
 
 .revenue-details {
     flex: 1;
-    padding: 10px;
     background-color: #e0e0e0;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

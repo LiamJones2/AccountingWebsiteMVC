@@ -3,6 +3,8 @@ using AccountingWebsite.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Extensions;
+using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AccountingWebsite.Controllers
 {
@@ -34,8 +36,40 @@ namespace AccountingWebsite.Controllers
                 .FirstOrDefault();
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(DateTime? start, DateTime? end)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                return RedirectToAction("Index", "Identity");
+            }
+
+                if (!start.HasValue || !end.HasValue)
+            {
+                // If start or end is not provided in the URL, use the default quarter
+                GetCurrentQuarter();
+            }
+            else
+            {
+                _company.quarter = new QuarterInfo
+                {
+                    StartDate = start.Value,
+                    EndDate = end.Value
+                };
+            }
+
+            await GetCompanyData();
+            return View(_company);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Revenue(DateTime? start, DateTime? end)
+        {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                return RedirectToAction("Index", "Identity");
+            }
+
             if (!start.HasValue || !end.HasValue)
             {
                 // If start or end is not provided in the URL, use the default quarter
@@ -50,11 +84,11 @@ namespace AccountingWebsite.Controllers
                 };
             }
 
-            await updateCompanyData();
+            await GetCompanyData();
             return View(_company);
         }
 
-        public async Task<CompanyData> updateCompanyData()
+        public async Task<CompanyData> GetCompanyData()
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -68,12 +102,26 @@ namespace AccountingWebsite.Controllers
                         t.TransactionDate <= _company.quarter.EndDate)
                     .ToList();
 
+                var previousQuarterlyTransactions = _db.Transactions
+                    .Where(t => t.CompanyId == company.CompanyId &&
+                        t.TransactionDate >= _company.quarter.StartDate.Value.AddMonths(-3) &&
+                        t.TransactionDate <= _company.quarter.EndDate.Value.AddMonths(-3))
+                    .ToList();
+
 
                 var overallRevenue = quarterlyTransactions
                     .Where(t => t.TransactionType == _revenueTypeId)
                     .Sum(t => t.Amount);
 
+                var previousRevenue = previousQuarterlyTransactions
+                    .Where(t => t.TransactionType == _revenueTypeId)
+                    .Sum(t => t.Amount);
+
                 var overallExpense = quarterlyTransactions
+                    .Where(t => t.TransactionType == _expenseTypeId)
+                    .Sum(t => t.Amount);
+
+                var previousExpense = previousQuarterlyTransactions
                     .Where(t => t.TransactionType == _expenseTypeId)
                     .Sum(t => t.Amount);
 
@@ -83,11 +131,15 @@ namespace AccountingWebsite.Controllers
                     QuarterlyTransactions = quarterlyTransactions,
                     OverallRevenue = overallRevenue,
                     OverallExpenses = overallExpense,
-                    quarter = _company.quarter
+                    PreviousRevenue = previousRevenue,
+                    PreviousExpenses = previousExpense,
+                    quarter = _company.quarter,
+                    NetProfit = overallRevenue - overallExpense
                 };
             }
             return _company;
         }
+
 
         public void GetCurrentQuarter()
         {
@@ -115,7 +167,31 @@ namespace AccountingWebsite.Controllers
             _company.quarter.EndDate = quarter?.AddMonths(3).AddDays(-1);
 
             // Redirect to Index with updated quarter parameters
-            return RedirectToAction(nameof(Index), new { start = _company.quarter.StartDate, end = _company.quarter.EndDate });
+            return RedirectToAction("Index", new { start = _company.quarter.StartDate, end = _company.quarter.EndDate });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTransaction([FromForm] int itemId, [FromForm] decimal amount, [FromForm] DateTime date, [FromForm] string description)
+        {
+            var transactionToUpdate = _db.Transactions.Find(itemId);
+
+            if (transactionToUpdate == null)
+            {
+                return NotFound(); // Handle the case where the entity is not found
+            }
+
+
+
+            // 2. Modify the Entity
+            transactionToUpdate.Amount = amount;
+            transactionToUpdate.TransactionDate = date;
+            transactionToUpdate.Description = description;
+
+            // 3. Save Changes
+            _db.SaveChanges();
+
+            return Json(new { success = true });
         }
     }
 }

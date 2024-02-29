@@ -20,11 +20,13 @@
         <div class="company-quarter">
             <form asp-action="UpdateQuarter" asp-controller="Company" method="post">
                 <input type="hidden" name="quarter" value="@(Model.quarter.StartDate?.AddMonths(-3))" />
+                <input type="hidden" name="page" value="Index" />
                 <button type="submit">Update Quarter</button>
             </form>
             <p>Quarter: Q1 2024</p>
             <form asp-action="UpdateQuarter" asp-controller="Company" method="post">
                 <input type="hidden" name="quarter" value="@(Model.quarter.StartDate?.AddMonths(3))" />
+                <input type="hidden" name="page" value="Index" />
                 <button type="submit">Update Quarter</button>
             </form>
         </div>
@@ -53,6 +55,11 @@
             <h2>Expenses</h2>
             <p>@Model.OverallExpensesFormatted</p>
             <p>@Model.PreviousExpensesFormatted</p>
+            <form asp-action="Expense" asp-controller="Company" method="post">
+                <input type="hidden" name="start" value="@(Model.quarter.StartDate)" />
+                <input type="hidden" name="end" value="@(Model.quarter.EndDate)" />
+                <button type="submit">See quarter revenue</button>
+            </form>
         </div>
         <div class="metric-block">
             <h2>Net Profit</h2>

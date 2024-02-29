@@ -1,7 +1,7 @@
 ﻿@model AccountingWebsite.Models.CompanyData
 
 @{
-    ViewData["Title"] = "Revenues";
+    ViewData["Title"] = "Expenses";
 }
 
 <link rel="stylesheet" href="~/css/company/transaction.css" asp-append-version="true" />
@@ -10,32 +10,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Revenue Transactions</title>
+    <title>Expense Transactions</title>
 </head>
 <body>
-    <div class="company-header">
-        <form asp-action="Index" asp-controller="Company">
-            <input type="hidden" name="start" value="@(Model.quarter.StartDate)" />
-            <input type="hidden" name="end" value="@(Model.quarter.EndDate)" />
-            <button type="submit">Back to all data</button>
-        </form>
-        <div class="company-info">
-            <h1>Revenue Transactions</h1>
-        </div>
-        <div class="company-quarter">
-            <form asp-action="UpdateQuarter" asp-controller="Company" method="post">
-                <input type="hidden" name="quarter" value="@(Model.quarter.StartDate?.AddMonths(-3))" />
-                <input type="hidden" name="page" value="Revenue" />
-                <button type="submit">Update Quarter</button>
-            </form>
-            <p>Quarter: Q1 2024</p>
-            <form asp-action="UpdateQuarter" asp-controller="Company" method="post">
-                <input type="hidden" name="quarter" value="@(Model.quarter.StartDate?.AddMonths(3))" />
-                <input type="hidden" name="page" value="Revenue" />
-                <button type="submit">Update Quarter</button>
-            </form>
-        </div>
-    </div>
+
+    <h1>Expense Transactions</h1>
     <div class="table-container">
     <table>
         <thead>
@@ -47,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var transaction in Model.QuarterlyTransactions.Where(t => t.TransactionType == 1))
+            @foreach (var transaction in Model.QuarterlyTransactions.Where(t => t.TransactionType == 2))
             {
                 <tr>
                     <td>@transaction.Amount</td>
@@ -65,7 +44,6 @@
 
     <div id="overlay">
         <div class="editOrDeleteModal" id="editOrDeleteModal">
-            
         </div>
     </div>
 
@@ -80,16 +58,16 @@
 
 
             document.getElementById('editOrDeleteModal').innerHTML = `
-                                    <form asp-action="UpdateTransaction" asp-controller="Company" method="post">
-                        <label>Amount:</label>
-                                        <input type="hidden" name="itemId" value="${id}" />
-                                                <input name="amount" value="${amount}" />
-                                                                 <input name="date" value="${date}" />
-                                                                <input name="description" value="${description}" />
-                                <button onclick="saveChanges()">Save Changes</button>
-                    </form>
-                            <button onclick="closeEditOrDeleteModal()">Cancel</button>
-                `;
+                                            <form asp-action="UpdateTransaction" asp-controller="Company" method="post">
+                                <label>Amount:</label>
+                                                <input type="hidden" name="itemId" value="${id}" />
+                                                        <input name="amount" value="${amount}" />
+                                                                         <input name="date" value="${date}" />
+                                                                        <input name="description" value="${description}" />
+                                        <button onclick="saveChanges()">Save Changes</button>
+                            </form>
+                                    <button onclick="closeEditOrDeleteModal()">Cancel</button>
+                        `;
         }
 
         function closeEditOrDeleteModal() {
@@ -102,17 +80,17 @@
             document.getElementById("editOrDeleteModal").style.display = "block";
 
             document.getElementById('editOrDeleteModal').innerHTML = `
-                                            <form asp-action="DeleteTransaction" asp-controller="Company" method="post">
-                                <label>Amount:</label>
-                                                        <input type="hidden" name="itemId" value="${id}" readonly/>
-                                                                <input name="amount" value="${amount}" readonly/>
-                                                                                 <input name="date" value="${date}" readonly/>
-                                                                                <input name="description" value="${description}" readonly/>
-                                                <button onclick="deleteTransaction()">Delete Transaction</button>
-                            </form>
-                                    <button onclick="closeEditOrDeleteModal()">Cancel</button>
-                        `;
-        } 
+                                                    <form asp-action="DeleteTransaction" asp-controller="Company" method="post">
+                                        <label>Amount:</label>
+                                                                <input type="hidden" name="itemId" value="${id}" readonly/>
+                                                                        <input name="amount" value="${amount}" readonly/>
+                                                                                         <input name="date" value="${date}" readonly/>
+                                                                                        <input name="description" value="${description}" readonly/>
+                                                        <button onclick="deleteTransaction()">Delete Transaction</button>
+                                    </form>
+                                            <button onclick="closeEditOrDeleteModal()">Cancel</button>
+                                `;
+        }
 
         function saveChanges() {
             var formData = $('form').serialize();

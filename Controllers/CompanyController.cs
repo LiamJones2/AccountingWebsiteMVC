@@ -88,6 +88,32 @@ namespace AccountingWebsite.Controllers
             return View(_company);
         }
 
+        [Authorize]
+        public async Task<IActionResult> Expense(DateTime? start, DateTime? end)
+        {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                return RedirectToAction("Index", "Identity");
+            }
+
+            if (!start.HasValue || !end.HasValue)
+            {
+                // If start or end is not provided in the URL, use the default quarter
+                GetCurrentQuarter();
+            }
+            else
+            {
+                _company.quarter = new QuarterInfo
+                {
+                    StartDate = start.Value,
+                    EndDate = end.Value
+                };
+            }
+
+            await GetCompanyData();
+            return View(_company);
+        }
+
         public async Task<CompanyData> GetCompanyData()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -158,16 +184,15 @@ namespace AccountingWebsite.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateQuarter(DateTime? quarter)
+        public async Task<IActionResult> UpdateQuarter(DateTime? quarter, string page)
         {
             System.Diagnostics.Debug.WriteLine("Changing Quarter");
 
-            // Update quarter dates
             _company.quarter.StartDate = quarter;
             _company.quarter.EndDate = quarter?.AddMonths(3).AddDays(-1);
 
-            // Redirect to Index with updated quarter parameters
-            return RedirectToAction("Index", new { start = _company.quarter.StartDate, end = _company.quarter.EndDate });
+
+            return RedirectToAction(page, new { start = _company.quarter.StartDate, end = _company.quarter.EndDate });
         }
 
 
@@ -178,17 +203,29 @@ namespace AccountingWebsite.Controllers
 
             if (transactionToUpdate == null)
             {
-                return NotFound(); // Handle the case where the entity is not found
+                return NotFound();
             }
 
-
-
-            // 2. Modify the Entity
             transactionToUpdate.Amount = amount;
             transactionToUpdate.TransactionDate = date;
             transactionToUpdate.Description = description;
 
-            // 3. Save Changes
+            _db.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTransaction([FromForm] int itemId)
+        {
+            var transactionToDelete = _db.Transactions.Find(itemId);
+
+            if (transactionToDelete == null)
+            {
+                return NotFound();
+            }
+
+            _db.Transactions.Remove(transactionToDelete);
             _db.SaveChanges();
 
             return Json(new { success = true });

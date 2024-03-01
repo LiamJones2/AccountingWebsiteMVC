@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.Design;
 
 namespace AccountingWebsite.Controllers
 {
@@ -195,7 +196,6 @@ namespace AccountingWebsite.Controllers
             return RedirectToAction(page, new { start = _company.quarter.StartDate, end = _company.quarter.EndDate });
         }
 
-
         [HttpPost]
         public async Task<IActionResult> UpdateTransaction([FromForm] int itemId, [FromForm] decimal amount, [FromForm] DateTime date, [FromForm] string description)
         {
@@ -226,6 +226,31 @@ namespace AccountingWebsite.Controllers
             }
 
             _db.Transactions.Remove(transactionToDelete);
+            _db.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTransaction([FromForm] int transactionId, [FromForm] decimal amount, [FromForm] DateTime date, [FromForm] string description)
+        {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                return RedirectToAction("Index", "Identity");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            Transaction transactionToAdd = new Transaction
+            {
+                Amount = amount,
+                TransactionDate = date,
+                Description = description,
+                TransactionType = transactionId,
+                CompanyId = user.CompanyId
+            };
+
+            _db.Transactions.Add(transactionToAdd);
             _db.SaveChanges();
 
             return Json(new { success = true });

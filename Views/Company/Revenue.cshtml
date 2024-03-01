@@ -6,6 +6,7 @@
 
 <link rel="stylesheet" href="~/css/company/transaction.css" asp-append-version="true" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/Company/transaction.js"></script>
 
 <!DOCTYPE html>
 <html>
@@ -36,6 +37,7 @@
             </form>
         </div>
     </div>
+    <button class="createTransactionButton" onclick="openCreateModal(1)">Create Expense Transaction</button>
     <div class="table-container">
     <table>
         <thead>
@@ -54,8 +56,8 @@
                     <td>@transaction.TransactionDate.ToString("yyyy-MM-dd")</td>
                     <td>@transaction.Description</td>
                     <td>
-                        <a href="#" onclick="openEditModal(@transaction.Id, @transaction.Amount, '@transaction.TransactionDate.ToString("yyyy-MM-dd")', '@transaction.Description')">Edit</a> |
-                            <a href="#" onclick="openDeleteModal(@transaction.Id, @transaction.Amount, '@transaction.TransactionDate.ToString("yyyy-MM-dd")', '@transaction.Description')">Delete</a>
+                        <a href="#" onclick="openEditModal(@transaction.Id, @transaction.Amount, '@transaction.TransactionDate.ToString("yyyy-MM-dd")', '@transaction.Description')">Edit</a>
+                        <a href="#" onclick="openDeleteModal(@transaction.Id, @transaction.Amount, '@transaction.TransactionDate.ToString("yyyy-MM-dd")', '@transaction.Description')">Delete</a>
                     </td>
                 </tr>
             }
@@ -64,100 +66,9 @@
     </div>
 
     <div id="overlay">
-        <div class="editOrDeleteModal" id="editOrDeleteModal">
+        <div class="transactionModal" id="transactionModal">
             
         </div>
     </div>
-
-
-
-    <!-- JavaScript for opening/closing modals -->
-    <script>
-        function openEditModal(id, amount, date, description) {
-            document.getElementById("overlay").style.display = "block";
-            document.getElementById("editOrDeleteModal").style.display = "block";
-
-
-
-            document.getElementById('editOrDeleteModal').innerHTML = `
-                                    <form asp-action="UpdateTransaction" asp-controller="Company" method="post">
-                        <label>Amount:</label>
-                                        <input type="hidden" name="itemId" value="${id}" />
-                                                <input name="amount" value="${amount}" />
-                                                                 <input name="date" value="${date}" />
-                                                                <input name="description" value="${description}" />
-                                <button onclick="saveChanges()">Save Changes</button>
-                    </form>
-                            <button onclick="closeEditOrDeleteModal()">Cancel</button>
-                `;
-        }
-
-        function closeEditOrDeleteModal() {
-            document.getElementById("overlay").style.display = "none";
-            document.getElementById("editOrDeleteModal").style.display = "none";
-        }
-
-        function openDeleteModal(id, amount, date, description) {
-            document.getElementById("overlay").style.display = "block";
-            document.getElementById("editOrDeleteModal").style.display = "block";
-
-            document.getElementById('editOrDeleteModal').innerHTML = `
-                                            <form asp-action="DeleteTransaction" asp-controller="Company" method="post">
-                                <label>Amount:</label>
-                                                        <input type="hidden" name="itemId" value="${id}" readonly/>
-                                                                <input name="amount" value="${amount}" readonly/>
-                                                                                 <input name="date" value="${date}" readonly/>
-                                                                                <input name="description" value="${description}" readonly/>
-                                                <button onclick="deleteTransaction()">Delete Transaction</button>
-                            </form>
-                                    <button onclick="closeEditOrDeleteModal()">Cancel</button>
-                        `;
-        } 
-
-        function saveChanges() {
-            var formData = $('form').serialize();
-
-            $.ajax({
-                type: 'POST',
-                url: '/Company/UpdateTransaction', // Adjust the URL based on your routing
-                data: formData,
-                success: function (response) {
-                    // Handle success, if needed
-                    alert('Transaction updated successfully!');
-                    console.log(response);
-                },
-                error: function (error) {
-                    // Handle error, if needed
-                    console.error(error);
-                }
-            });
-
-            // Close the modal
-            closeEditModal();
-        }
-
-        function deleteTransaction() {
-            var formData = $('form').serialize();
-
-            $.ajax({
-                type: 'POST',
-                url: '/Company/DeleteTransaction', // Adjust the URL based on your routing
-                data: formData,
-                success: function (response) {
-                    // Handle success, if needed
-                    alert('Transaction updated successfully!');
-                    console.log(response);
-                },
-                error: function (error) {
-                    // Handle error, if needed
-                    console.error(error);
-                }
-            });
-
-            // Close the modal
-            closeEditModal();
-        }
-    </script>
-
 </body>
 </html>
